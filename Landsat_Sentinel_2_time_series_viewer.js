@@ -21,7 +21,7 @@
            cloudness: 0: least clouded imagery. 1: second least clouded imagery ect for the first window.
 */
 ////Parameters defination 
-//pick up an default location
+//pick up an initial location
   var long=ee.Number(25.332342);
   var lat=ee.Number(55.002364);
 
