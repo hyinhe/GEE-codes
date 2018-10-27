@@ -10,7 +10,7 @@
            The 1st window shows the least clouded Landsat imagery
            The 2nd window shows the earliest imagery from 5 least clouded imagery
            The 3nd window shows the second earliest imagery from 5 least clouded imagery
-           The 4rd window show the Google Earth imagery (or the 3rd early imagery from 5 least clouded imagery)
+           The 4rd window show the Google Earth imagery (or the 3rd earliest imagery from 5 least clouded imagery)
            The 5th window shows the NDVI time series derived from Landsat SR and Sentinel-2 TOA 
   Usage: Run the codes, then click anywhere on the first window
   Parameters:
