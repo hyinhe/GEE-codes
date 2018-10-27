@@ -8,8 +8,8 @@
            You can also draw points/polygons directly on the imagery to collect training data for classification
            There are 5 windows/maps, from the left to the right: 
            The 1st window shows the least clouded Landsat imagery
-           The 2nd window shows the most early imagery from 5 least clouded imagery
-           The 3nd window shows the second early imagery from 5 least clouded imagery
+           The 2nd window shows the earliest imagery from 5 least clouded imagery
+           The 3nd window shows the second earliest imagery from 5 least clouded imagery
            The 4rd window show the Google Earth imagery (or the 3rd early imagery from 5 least clouded imagery)
            The 5th window shows the NDVI time series derived from Landsat SR and Sentinel-2 TOA 
   Usage: Run the codes, then click anywhere on the first window
