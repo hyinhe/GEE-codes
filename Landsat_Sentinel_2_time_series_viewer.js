@@ -135,7 +135,6 @@
                       .merge(collectionS);
                        
 ////Filter Landsat collection for the specified area
-
   var collection8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
     .filterDate(start, end)
     .filterBounds(locat)
@@ -197,7 +196,6 @@
   var imageclear2 = ee.Image(image2).visualize(vis2);
   var imageclear3 = ee.Image(image3).visualize(vis2);
 
-
 //Add the imagery to the first map
   var LandsatLayer0=ui.Map.Layer(imageclear0).setName(id0);
   Map.add(LandsatLayer0);
@@ -229,7 +227,6 @@
   var map3 = new ui.Map();
 
 //// Chart setup
-
 // Generates a new time series chart of NDVI for the given coordinates.
   var generateChart=function (coords) {
 // Update the lon/lat panel with values from the click event.
@@ -311,7 +308,6 @@
   lon: initialPoint.coordinates().get(0).getInfo(),
   lat: initialPoint.coordinates().get(1).getInfo()
 });
-
 
   function initMap(map) {
   map.setCenter(long1,lat1, 14);
