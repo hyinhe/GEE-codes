@@ -337,7 +337,7 @@
 
   var height = getMapSize().h;
 
-// Create a panel with vertical flow layout.
+// Create a panel
   var panel = ui.Panel({
   layout: ui.Panel.Layout.flow('horizontal'),
   style: {width: '100vw', height: height + '300px'}
