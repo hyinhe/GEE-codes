@@ -3,7 +3,7 @@
 
   Date:26-Oct-2018
   
-  Purpose: A tool for plotting NDVI time series from Landsat SR and Sentinel 2 TOA time series; 
+  Purpose: A tool for plotting BSI (bare soil index) and NDVI time series from Landsat SR and Sentinel 2 TOA time series; 
            visul interpretation of cloud-free Landsat SR imgery.
            You can also draw points/polygons directly on the imagery to collect training data for classification
            There are 5 windows/maps, from the left to the right: 
@@ -25,14 +25,23 @@
   var long=ee.Number(25.332342);
   var lat=ee.Number(55.002364);
 
+
   var long1=long.getInfo();
   var lat1=lat.getInfo();
 
   var locat = ee.Geometry.Point(long,lat);
 
 //Select the imgery during which period for plotting NDVI time series
-  var start='2017-01-01';
-  var end='2018-12-31';
+  var start='2016-01-1';
+  var end='2017-12-30';
+  
+//Select spring imagery for the second window
+  var start1='2017-04-15';
+  var end1='2017-07-1';
+  
+//Select autumn imagery for the second window
+  var start2='2017-07-1';
+  var end2='2017-09-20';
 
 //Defined the months for plotting NDVI time series 4:April, 11:November
   var startmonth= ee.Number(1);
@@ -46,7 +55,7 @@
 
 //select *th clouded imagery for the first window. For instant, 0 indicate the least clouded imagery, 
 //1 indicates the second leasted clouded imagery
-  var cloudness=ee.Number(0);
+  var cloudness=ee.Number(2);
 
 ////Cloud masking and caculate NDVI
 
@@ -67,12 +76,35 @@
   var ndvi =image.normalizedDifference(['B5','B4']).rename('L8_SR_NDVI');
   return image.addBands(ndvi);
 };
+
+var bsiL8=function(image){
+  var bsi=image.select('B7').add(image.select('B4'))
+        .subtract(image.select('B5')).subtract(image.select('B2'))
+        .divide(image.select('B7').add(image.select('B4'))
+        .add(image.select('B5')).add(image.select('B2')))
+        .rename('L8_SR_bsi');
+        return image.addBands(bsi);
+  
+};
 //Apply the cloud mask on L8
-  var collection = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
+  var collectionL8_ndvi = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
     .filterDate(start, end)
     .filter(ee.Filter.calendarRange(startmonth,endmonth,'month'))
     .map(cloudMaskL8)
-    .map(addNDVI).select('L8_SR_NDVI');
+    .map(addNDVI)
+    .map(bsiL8)
+   //     .filterBounds(locat)
+    .select('L8_SR_NDVI');
+  
+  var collectionL8_bsi = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
+    .filterDate(start, end)
+    .filter(ee.Filter.calendarRange(startmonth,endmonth,'month'))
+    .map(cloudMaskL8)
+    .map(addNDVI)
+    .map(bsiL8)
+  //      .filterBounds(locat)
+    .select('L8_SR_bsi');
+    
 //cloud mask for L4-7
   var cloudMaskL457 = function(image) {
   var qa = image.select('pixel_qa');
@@ -90,18 +122,53 @@
   var ndvi =image.normalizedDifference(['B4','B3']).rename('L4_7_SR_NDVI');
   return image.addBands(ndvi);
 };
+
+var bsiL7=function(image){
+  var bsi=image.select('B7').add(image.select('B3'))
+        .subtract(image.select('B4')).subtract(image.select('B1'))
+        .divide(image.select('B7').add(image.select('B3'))
+        .add(image.select('B4')).add(image.select('B1')))
+        .rename('L4_7_SR_bsi');
+        return image.addBands(bsi);
+  
+};
+
 //Calculate NDVI from L7 and L5
-  var collectionL7 = ee.ImageCollection('LANDSAT/LE07/C01/T1_SR')
+  var collectionL7_ndvi = ee.ImageCollection('LANDSAT/LE07/C01/T1_SR')
     .filterDate(start, end)
     .filter(ee.Filter.calendarRange(startmonth,endmonth,'month'))
     .map(cloudMaskL457)
-    .map(addNDVI).select('L4_7_SR_NDVI');
+    .map(addNDVI)
+    .map(bsiL7)
+   //     .filterBounds(locat)
+    .select('L4_7_SR_NDVI');
     
-  var collectionL5 = ee.ImageCollection('LANDSAT/LT05/C01/T1_SR')
+  var collectionL5_ndvi = ee.ImageCollection('LANDSAT/LT05/C01/T1_SR')
     .filterDate(start, end)
    .filter(ee.Filter.calendarRange(startmonth,endmonth,'month'))
     .map(cloudMaskL457)
-    .map(addNDVI).select('L4_7_SR_NDVI');
+    .map(addNDVI)
+    .map(bsiL7)
+   // .filterBounds(locat)
+    .select('L4_7_SR_NDVI');
+    
+      var collectionL7_bsi = ee.ImageCollection('LANDSAT/LE07/C01/T1_SR')
+    .filterDate(start, end)
+    .filter(ee.Filter.calendarRange(startmonth,endmonth,'month'))
+    .map(cloudMaskL457)
+    .map(addNDVI)
+    .map(bsiL7)
+   //     .filterBounds(locat)
+    .select('L4_7_SR_bsi');
+    
+  var collectionL5_bsi = ee.ImageCollection('LANDSAT/LT05/C01/T1_SR')
+    .filterDate(start, end)
+   .filter(ee.Filter.calendarRange(startmonth,endmonth,'month'))
+    .map(cloudMaskL457)
+    .map(addNDVI)
+    .map(bsiL7)
+  //  .filterBounds(locat)
+    .select('L4_7_SR_bsi');
 
 // Function to mask clouds using the Sentinel-2 QA band.
   function maskS2clouds(image) {
@@ -122,19 +189,51 @@
   return image.addBands(ndvi);
 };
 
+
+var bsiS2=function(image){
+  var bsi=image.select('B12').add(image.select('B4'))
+        .subtract(image.select('B8A')).subtract(image.select('B2'))
+        .divide(image.select('B12').add(image.select('B4'))
+        .add(image.select('B8A')).add(image.select('B2')))
+        .rename('S2_TOA_bsi');
+        return image.addBands(bsi);
+  
+};
+
 // Load Sentinel-2 TOA reflectance data.
-  var collectionS = ee.ImageCollection('COPERNICUS/S2')
+  var collectionS_ndvi = ee.ImageCollection('COPERNICUS/S2')
     .filterDate(start, end)
     .filter(ee.Filter.calendarRange(startmonth,endmonth,'month'))
     .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
     .map(maskS2clouds)
-    .map(addNDVI).select('S2_TOA_NDVI');
+    .map(addNDVI)
+    .map(bsiS2)
+    .select('S2_TOA_NDVI');
+    
+   var collectionS_bsi = ee.ImageCollection('COPERNICUS/S2')
+    .filterDate(start, end)
+    .filter(ee.Filter.calendarRange(startmonth,endmonth,'month'))
+    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
+    .map(maskS2clouds)
+    .map(addNDVI)
+    .map(bsiS2)
+    .select('S2_TOA_bsi');   
+    
+    
 //Merge all the collections
-  var mergedCollection = collection.merge(collectionL5)
-                       .merge(collectionL7)
-                      .merge(collectionS);
+  var collection_ndvi = collectionL8_ndvi.merge(collectionL5_ndvi)
+                       .merge(collectionL7_ndvi).merge(collectionS_ndvi);
                        
+  var collection_bsi = collectionL8_bsi.merge(collectionL5_bsi)
+                       .merge(collectionL7_bsi).merge(collectionS_bsi);
+   //                   .merge(collectionS);
+
+  //print(collection_bsi,'bsi');       
+
+  //var collectionndvi=mergedCollection.select(['L8_SR_NDVI']);
+  //print(collectionndvi);
 ////Filter Landsat collection for the specified area
+
   var collection8 = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
     .filterDate(start, end)
     .filterBounds(locat)
@@ -158,43 +257,76 @@
 //Merge all the collections
   var collection=collection8.merge(collection7).merge(collection5).merge(collection4)
     .sort('CLOUD_COVER', true);
+  
+  //Get spring (sp) and autumn (au) collection
+  var collection_sp=collection.filterDate(start1,end1).sort('CLOUD_COVER', true);
+  var collection_au=collection.filterDate(start2,end2).sort('CLOUD_COVER', true);
+
     
 //Get the imagery list
   var imagery_list =collection.toList(collection.size());
   print('Imagery List',imagery_list);
+  
+   var imagery_list_sp =collection_sp.toList(collection_sp.size());
+  print('Spring imagery List',imagery_list_sp);
+  
+   var imagery_list_au =collection_au.toList(collection_au.size());
+  print('Autumn imagery List',imagery_list_au);
 
 //get the *the clouded imagery from the list, 'cloudness' was defined at the beginning
   var image0 =ee.Image(imagery_list.get(cloudness));
   var name0 =ee.String(image0.id());
   var id0=name0.getInfo();
+  
+  var image0_sp =ee.Image(imagery_list_sp.get(cloudness));
+  var name0_sp =ee.String(image0_sp.id());
+  var id0_sp=name0_sp.getInfo();
+  
+  var image0_au =ee.Image(imagery_list_au.get(cloudness));
+  var name0_au =ee.String(image0_au.id());
+  var id0_au=name0_au.getInfo();
     
 //Take the least clouded 5 imagery and sort them based on the observation time    
-  var image5 = collection.limit(5).sort('SENSING_TIME',true);
+  var image5 = collection.limit(2).sort('SENSING_TIME',true);
+  var image5_sp = collection_sp.limit(2).sort('SENSING_TIME',true);
+  var image5_au = collection_au.limit(2).sort('SENSING_TIME',true);
+
 
 //convert to list
   var least_cloud_list =image5.toList(collection.size());
+  var least_cloud_list_sp =image5_sp.toList(collection_sp.size());
+  var least_cloud_list_au =image5_au.toList(collection_au.size());
 
 //get the imagery from the list
   var image1 =ee.Image(least_cloud_list.get(0));
-  var image2 =ee.Image(least_cloud_list.get(1));
-  var image3 =ee.Image(least_cloud_list.get(2));
+
+  var image1_sp =ee.Image(least_cloud_list_sp.get(0));
+
+  var image1_au =ee.Image(least_cloud_list_au.get(0));
 
 //get the IDs of the imagery
   var name1 =ee.String(image1.id());
-  var name2 =ee.String(image2.id());
-  var name3 =ee.String(image3.id());
+
+  var name1_sp =ee.String(image1_sp.id());
+
+  var name1_au =ee.String(image1_au.id());
 
   var id1=name1.getInfo();
-  var id2=name2.getInfo();
-  var id3=name3.getInfo();
 
+  var id1_sp=name1_sp.getInfo();
+
+  var id1_au=name1_au.getInfo();
 //Set the band combination and color scheme
   var vis2={bands: ["SWIR2", "NIR", "red"], min:0, max: 5000};
 
   var imageclear0 = ee.Image(image0).visualize(vis2);
-  var imageclear1 = ee.Image(image1).visualize(vis2);
-  var imageclear2 = ee.Image(image2).visualize(vis2);
-  var imageclear3 = ee.Image(image3).visualize(vis2);
+
+
+  var imageclear0_sp = ee.Image(image0_sp).visualize(vis2);
+
+
+  var imageclear0_au = ee.Image(image0_au).visualize(vis2);
+
 
 //Add the imagery to the first map
   var LandsatLayer0=ui.Map.Layer(imageclear0).setName(id0);
@@ -209,10 +341,10 @@
 // Create an intro panel with labels.
   var intro = ui.Panel([
   ui.Label({
-    value: 'NDVI Time Series Inspector',
+    value: 'NDVI/BSI Time Series Inspector',
     style: {fontSize: '20px', fontWeight: 'bold'}
   }),
-  ui.Label('Click a location to see NDVI time series from Landsat and Sentinel 2')
+  ui.Label('Click a location to see NDVI/BSI time series from Landsat and Sentinel 2')
 ]);
   mapPanel.add(intro);
 
@@ -227,6 +359,7 @@
   var map3 = new ui.Map();
 
 //// Chart setup
+
 // Generates a new time series chart of NDVI for the given coordinates.
   var generateChart=function (coords) {
 // Update the lon/lat panel with values from the click event.
@@ -242,7 +375,7 @@
 //set the number to 15 indicates there are 15 layers except the "clicked location"
   Map.layers().set(15, dot);
 // Make a chart from the time series.
-  var ndviChart = ui.Chart.image.series(mergedCollection, point, ee.Reducer.mean(), kernalsize);
+  var ndviChart = ui.Chart.image.series(collection_ndvi, point, ee.Reducer.mean(), kernalsize);
 
 // Customize the chart.
   ndviChart.setOptions({
@@ -273,16 +406,54 @@
   });
 // Add the chart at a fixed position, so that new charts overwrite older ones.
     mapPanel.widgets().set(2, ndviChart);
+ 
+ 
+ 
+// Make a chart from the time series.
+var bsiChart = ui.Chart.image.series(collection_bsi, point, ee.Reducer.mean(), kernalsize);
+
+// Customize the chart.
+  bsiChart.setOptions({
+    title: 'BSI: time series',
+    vAxis: {title: 'BSI',ticks:[-0.8,-0.6,-0.4,-0.2,0,0.2,0.4,0.6,0.8]},
+    hAxis: {title: 'Date', format: 'MM-yy', gridlines: {count: 7}},
+    series: {
+      0: {
+        color: 'blue',
+        lineWidth: 0,
+        pointsVisible: true,
+        pointSize: 2,
+      },
+      1: {
+        color: 'red',
+        lineWidth: 0,
+        pointsVisible: true,
+        pointSize: 2,
+      },
+      2: {
+        color: 'green',
+        lineWidth: 0,
+        pointsVisible: true,
+        pointSize: 2,
+      },
+    },
+    legend: {position: 'right'},
+  });
+// Add the chart at a fixed position, so that new charts overwrite older ones.
+    mapPanel.widgets().set(3, bsiChart);
+  
+ 
   
     map1.setCenter(point.coordinates().get(0).getInfo(),point.coordinates().get(1).getInfo(), 14);
-    map1.addLayer(image1, vis2);
+    map1.addLayer(image1_sp, vis2);
     map1.addLayer(point, {color:'FF0000'});
-    map1.add(ui.Label(id1, {position:'bottom-center'}));
+    map1.add(ui.Label(id1_sp, {position:'bottom-center'}));
+  
   
     map2.setCenter(point.coordinates().get(0).getInfo(),point.coordinates().get(1).getInfo(), 14);
-    map2.addLayer(image2, vis2);
+    map2.addLayer(image1_au, vis2);
     map2.addLayer(point, {color:'FF0000'});
-    map2.add(ui.Label(id2, {position:'bottom-center'}));
+    map2.add(ui.Label(id1_au, {position:'bottom-center'}));
     
     map3.setCenter(point.coordinates().get(0).getInfo(),point.coordinates().get(1).getInfo(), 14);
  //If you want to add the 3rd least clouded imagery:
@@ -308,6 +479,7 @@
   lon: initialPoint.coordinates().get(0).getInfo(),
   lat: initialPoint.coordinates().get(1).getInfo()
 });
+
 
   function initMap(map) {
   map.setCenter(long1,lat1, 14);
@@ -337,7 +509,7 @@
 
   var height = getMapSize().h;
 
-// Create a panel
+// Create a panel with vertical flow layout.
   var panel = ui.Panel({
   layout: ui.Panel.Layout.flow('horizontal'),
   style: {width: '100vw', height: height + '300px'}
