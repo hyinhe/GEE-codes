@@ -479,15 +479,21 @@ var greenS2 = function(image){
 
 //get the *the clouded imagery from the list, 'cloudness' was defined at the beginning
   var image0 =ee.Image(imagery_list.get(cloudness));
-  var name0 =ee.String(image0.id());
+  var name0_1 =ee.String(image0.id());
+  var strlength=name0_1.length()
+  var name0 = name0_1.slice(6,strlength);
   var id0=name0.getInfo();
   
   var image0_sp =ee.Image(imagery_list_sp.get(cloudness));
-  var name0_sp =ee.String(image0_sp.id());
+  var name0_sp_1 =ee.String(image0_sp.id());
+  var strlength_sp=name0_sp_1.length()
+  var name0_sp = name0_sp_1.slice(6,strlength_sp);
   var id0_sp=name0_sp.getInfo();
   
   var image0_au =ee.Image(imagery_list_au.get(cloudness));
-  var name0_au =ee.String(image0_au.id());
+  var name0_au_1 =ee.String(image0_au.id());
+  var strlength_au=name0_au_1.length()
+  var name0_au = name0_au_1.slice(6,strlength_au);
   var id0_au=name0_au.getInfo();
     
 //Take the least clouded 5 imagery and sort them based on the observation time    
