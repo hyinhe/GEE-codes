@@ -2,7 +2,7 @@
   Email:hyinhe@gmail.com
   Date:26-Oct-2018
   
-  Purpose: A tool for plotting NDVI, BSI (bare soil index) and Tasseled Cap transformation time series from Landsat SR and Sentinel 2 TOA time series; 
+  Purpose: A tool for plotting NDVI, BSI (bare soil index) and Tasseled Cap transformation (Brightness, Greenness and Wetness) time series from Landsat SR and Sentinel 2 TOA time series; 
            visul interpretation of cloud-free Landsat SR imgery.
            You can also draw points/polygons directly on the imagery to collect training data for classification
            There are 5 windows/maps, from the left to the right: 
