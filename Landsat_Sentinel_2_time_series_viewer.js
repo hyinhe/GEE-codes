@@ -1,6 +1,5 @@
-/*Author:He Yin 
-  Email:hyin39@wisc.edu
-
+/*Author:He Yin
+  Email:hyinhe@gmail.com
   Date:26-Oct-2018
   
   Purpose: A tool for plotting NDVI, BSI (bare soil index) and Tasseled Cap transformation time series from Landsat SR and Sentinel 2 TOA time series; 
