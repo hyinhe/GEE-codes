@@ -17,7 +17,7 @@
            period: start, end; startmonth, endmonth
            Kernal size: whehter NDVI value from a single pixel (30) or the mean value of the 3*3 (90) Landsat pixel should be plotted
            panelsize:the window size of the NDVI time series
-           cloudness: 0: least clouded imagery. 1: second least clouded imagery for the first window.
+           cloudness: 0: least clouded imagery. 1: second least clouded imagery. 2: third least clouded imagery, etc.
 */
 ////Parameters defination 
 //pick up an initial location
@@ -29,7 +29,7 @@
 //Select spring imagery for the second window
   var start1='2016-04-15';
   var end1='2016-07-1'; 
-//Select autumn imagery for the second window
+//Select autumn imagery for the third window
   var start2='2017-07-1';
   var end2='2017-09-20';
 
