@@ -56,9 +56,9 @@
                 .or(qa.bitwiseAnd(1 << 4))
                 .or(qa.bitwiseAnd(1 << 3))  
                 .or(qa.bitwiseAnd(1 << 8).and(qa.bitwiseAnd(1 << 9)));   
-  var mask2 = image.mask().reduce(ee.Reducer.min());
+ // var mask2 = image.mask().reduce(ee.Reducer.min());
   return image.select(['B2','B3','B4','B5','B6','B7'],['blue', 'green', 'red', 'nir', 'swir1', 'swir2'])
-      .updateMask(cloud.not()).updateMask(mask2)
+      .updateMask(cloud.not())//.updateMask(mask2)
 };
 //Calculate NDVI
   var addNDVI= function(image){
@@ -152,10 +152,10 @@ var greenessL8 = function(image){
           .or(qa.bitwiseAnd(1 << 4))
 
 // Remove edge pixels that don't occur in all bands
-  var mask2 = image.mask().reduce(ee.Reducer.min());
+ //var mask2 = image.mask().reduce(ee.Reducer.min());
   return image.select(['B1', 'B2', 'B3', 'B4', 'B5', 'B7'], // change band names
     ['blue', 'green', 'red', 'nir', 'swir1', 'swir2'])
-  .updateMask(cloud.not()).updateMask(mask2)
+  .updateMask(cloud.not())//.updateMask(mask2)
 };
   var addNDVI= function(image){
   var ndvi =image.normalizedDifference(['nir','red']).rename('L4_7_SR_NDVI');
